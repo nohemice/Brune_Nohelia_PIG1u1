@@ -1,5 +1,6 @@
 package agedat;
 
+import clase.contacto;
 import formulario.inicio;
 
 //tarea de interfaz grafica nohelia brune
@@ -11,4 +12,16 @@ public class AgendaT {
 		i.setVisible(true);
 	}
 
+	public void modificarContacto(contacto c, String nuevoNombre, String nuevoApellido, String nuevoNumero, String nuevoCorreo) {
+	    
+	    
+	    synchronized (c) {
+	        c.setnombres(nuevoNombre);
+	        c.setapellidos(nuevoApellido);
+	        c.setnumero(nuevoNumero);
+	        c.setcorreo(nuevoCorreo); 
+	        
+	        System.out.println("Modificación segura completada para: " + c.getnombres());
+	    } 
+	}
 }

@@ -1,17 +1,23 @@
 package formulario;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,6 +32,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -33,18 +40,26 @@ import javax.swing.border.MatteBorder;
 import javax.swing.border.StrokeBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke; 
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
 import clase.contacto;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.event.ItemEvent;
 
 
-public class inicio extends JFrame {
+public class inicio extends JFrame {	
 	ArrayList<contacto> Agenda = new ArrayList<>();
 
 	DefaultTableModel M;
@@ -67,17 +82,13 @@ public class inicio extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JProgressBar barraProgreso;
-	private JPanel contentPane;
+	private JPanel contentPane, panelDeLaAgenda;
 	private JLabel lblGmail, lblOutlook, lblOtros;
-	private JPanel panelDeLaAgenda;
 	private JTabbedPane pestania;
-	private JTextField txtID;
-	private JTextField txtNombres;
-	private JTextField txtApellido;
-	private JTextField txtCorreo;
-	private JTable Jtable1;
-	private JTextField txtNumero;
-	private JTable tablaConsultas;
+	private JTextField txtID, txtNombres, txtApellido, txtCorreo, txtNumero;
+	private JTable Jtable1, tablaConsultas;
+	private JButton BTN_SAVE;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -100,6 +111,7 @@ public class inicio extends JFrame {
 	 */
 	//la ventana y sus medidas
 	public inicio() {
+
 		setForeground(new Color(46, 68, 44));
 		setTitle("Agenda Telefonica");
 		setBackground(new Color(46, 68, 44));
@@ -110,7 +122,7 @@ public class inicio extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
+		
 		//el JtabbedPane pestania y sus medidas
 		pestania =new JTabbedPane();
 		pestania.setForeground(new Color(255, 255, 255));
@@ -120,8 +132,6 @@ public class inicio extends JFrame {
 		pestania.setBounds(0, 0, 1212, 475);
 		contentPane.add(pestania);
 			    	
-		float[] dash2 = {6f, 4f}; 
-		java.awt.BasicStroke stroke = new java.awt.BasicStroke(3, java.awt.BasicStroke.CAP_SQUARE, java.awt.BasicStroke.JOIN_MITER, 10.0f, dash2, 0.0f);
 		
 		//el nombre que va llevar la pestaña en primer Jtabbed de la ventana del programa de agenda telefonica
 		panelDeLaAgenda = new JPanel();
@@ -131,229 +141,215 @@ public class inicio extends JFrame {
 		panelDeLaAgenda.setLayout(null);
 		pestania.addTab("Mi Agenda", panelDeLaAgenda);
 		pestania.setBackgroundAt(0, new Color(160, 200, 120));
+		
+		
 		//==============================================================================
 				//etiquetas de la ventana principal
 
 			    JLabel LBLtAgT = new JLabel("Agenda      Telefonica");
-			    LBLtAgT.setForeground(new Color(46, 68, 44));
-			    LBLtAgT.setFont(new Font("BM neco", Font.PLAIN, 44));
+			    EstiloComponentes.aplicarEstiloTitulos(LBLtAgT);
 			    LBLtAgT.setBounds(164, 0, 995, 59);
 			    panelDeLaAgenda.add(LBLtAgT);
 			    
 			    JLabel LBL_ID = new JLabel("Identificacion");
-			    LBL_ID.setForeground(new Color(46, 68, 44));
-			    LBL_ID.setFont(new Font("Nokian", Font.BOLD, 14));
+			    EstiloComponentes.aplicarEstiloLabel(LBL_ID);
 			    LBL_ID.setBounds(10, 74, 119, 14);
 			    panelDeLaAgenda.add(LBL_ID);
 			    
 			    JLabel LBL_NOM = new JLabel("Nombres");
-			    LBL_NOM.setForeground(new Color(46, 68, 44));
-			    LBL_NOM.setFont(new Font("Nokian", Font.BOLD, 14));
+			    EstiloComponentes.aplicarEstiloLabel(LBL_NOM);
 			    LBL_NOM.setBounds(10, 114, 75, 14);
 			    panelDeLaAgenda.add(LBL_NOM);
 			    	    
 			    JLabel LBL_AP = new JLabel("Apellido");
-			    LBL_AP.setForeground(new Color(46, 68, 44));
-			    LBL_AP.setFont(new Font("Nokian", Font.BOLD, 14));
+			    EstiloComponentes.aplicarEstiloLabel(LBL_AP);
 			    LBL_AP.setBounds(10, 160, 119, 14);
 			    panelDeLaAgenda.add(LBL_AP);
 			    			    			    			    
 			    JLabel LBL_EMAIL = new JLabel("E-mail");
-			    LBL_EMAIL.setForeground(new Color(46, 68, 44));
-			    LBL_EMAIL.setFont(new Font("Nokian", Font.BOLD, 14));
+			    EstiloComponentes.aplicarEstiloLabel(LBL_EMAIL);
 			    LBL_EMAIL.setBounds(10, 205, 75, 14);
 			    panelDeLaAgenda.add(LBL_EMAIL);
 			    			    			    			    			    
 			    // campos de texto de la ventana principal
 			    			    			    
 			    txtID = new JTextField();
-			    txtID.setForeground(new Color(46, 68, 44));
-			    txtID.setBackground(new Color(160, 200, 120));
-			    personalizarCampo(txtID, new Color(46, 68, 44));
+			    EstiloComponentes.EstiloCampo(txtID, PaletaNokia.VERDE_OSCURO);
 			    txtID.setBounds(133, 70, 241, 31);
 			    panelDeLaAgenda.add(txtID);
 			    txtID.setColumns(10);
 			    	    			    			    			    			    	
 			    txtNombres = new JTextField();
 			    txtNombres.setHorizontalAlignment(SwingConstants.LEFT);
-			    txtNombres.setFont(new Font("Nokian", Font.BOLD, 11));
-			    txtNombres.setForeground(new Color(46, 68, 44));
-			    txtNombres.setBackground(new Color(160, 200, 120));
-			    personalizarCampo(txtNombres, new Color(46, 68, 44));
+			    EstiloComponentes.EstiloCampo(txtNombres, PaletaNokia.VERDE_OSCURO);
 			    txtNombres.setBounds(133, 109, 241, 31);
 			    panelDeLaAgenda.add(txtNombres);
 			    txtNombres.setColumns(10);
 			    		    			    			    			    			    				    	
 			    txtApellido = new JTextField();
-			    txtApellido.setForeground(new Color(46, 68, 44));
-			    txtApellido.setFont(new Font("Nokian", Font.BOLD, 11));
-			    txtApellido.setBackground(new Color(160, 200, 120));
+			    EstiloComponentes.EstiloCampo(txtApellido, PaletaNokia.VERDE_OSCURO);
 			    txtApellido.setBounds(133, 151, 241, 34);
-			    personalizarCampo(txtApellido, new Color(46, 68, 44));
 			    panelDeLaAgenda.add(txtApellido);
 			    txtApellido.setColumns(10);
 			    			    			    			    			    			    				    				    	
 			    txtCorreo = new JTextField();
-			    txtCorreo.setForeground(new Color(46, 68, 44));
-			    txtCorreo.setFont(new Font("Nokian", Font.BOLD, 11));
-			    txtCorreo.setBackground(new Color(160, 200, 120));
+			    EstiloComponentes.EstiloCampo(txtCorreo, PaletaNokia.VERDE_OSCURO);
 			    txtCorreo.setBounds(133, 196, 241, 34);
-			    personalizarCampo(txtCorreo, new Color(46, 68, 44));
 			    panelDeLaAgenda.add(txtCorreo);
 			    txtCorreo.setColumns(10);
 			    
-			    JButton BTN_SAVE = new JButton("Guardar");
-			    BTN_SAVE.setIcon(new ImageIcon(inicio.class.getResource("/img/guardar2.3.png")));
-			    BTN_SAVE.setForeground(new Color(255, 255, 255));
-			    BTN_SAVE.setBackground(new Color(46, 68, 44));
-			    BTN_SAVE.setFont(new Font("Nokian", Font.BOLD, 18));
-			    BTN_SAVE.addActionListener(new ActionListener() {
-			    
-			    @Override
-				public void actionPerformed(ActionEvent e) {
+  	//===============================================================
+	//botones ventana principal
+	//=====================================================================
+			    				    				    	
+		JButton BTN_SAVE = new JButton("Guardar");
+		BTN_SAVE.setBounds(536, 389, 187, 42);
+		EstiloComponentes.aplicarEstiloBoton(BTN_SAVE);
+		BTN_SAVE.setIcon(new ImageIcon(inicio.class.getResource("/img/guardar2.3.png")));
+		panelDeLaAgenda.add(BTN_SAVE);
+		
+		BTN_SAVE.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		        
+		        // --- VALIDACIÓN DE CAMPOS VACÍOS ---
+		       
+		        if (txtID.getText().trim().isEmpty() || 
+		            txtNombres.getText().trim().isEmpty() || 
+		            txtNumero.getText().trim().isEmpty()) {
+		            
+		            inicio.this.mostrarNotificacion("Error: Por favor rellene todos los campos del formulario");
+		            return; // Detiene la ejecución aquí mismo
+		        }
+
+		        try {
+		            // 1. Capturar datos de los campos de texto
+		            
+		            int idInt = Integer.parseInt(txtID.getText().trim());
+		            String nom = txtNombres.getText();
+		            String ape = txtApellido.getText();
+		            String mail = txtCorreo.getText();
+		            String num = txtNumero.getText();
+
+		            // 2. Ejecutar proceso en segundo plano
+		            //hilo de validacion
+		            SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+		                @Override
+		                protected Boolean doInBackground() throws Exception {
+		                    inicio.this.actualizarEstadoUI(true);
+
+		                    synchronized (Agenda) {
+		                    
+		                    for (contacto c : Agenda) {
+		                        if (c.getnumero().equals(num)) {
+		                            return false; // Duplicado encontrado
+		                        }
+		                    }
+
+		                    Thread.sleep(600); 
+		                    Agenda.add(new contacto(idInt, nom, ape, mail, num));
+		                    }
+		                    return true;
+		                
+		                }
+		                @Override
+		                protected void done() {
+		                    try {
+		                        boolean exito = get();
+		                        inicio.this.actualizarEstadoUI(false);
+
+		                        if (exito) {
+		                            inicio.this.mostrarNotificacion("Contacto guardado exitosamente");
+		                            inicio.this.limpiarCampos();
+		                            inicio.this.refrescarTabla();
+		                        } else {
+		                            inicio.this.mostrarNotificacion("Error: El número ya está registrado");
+		                        }
+		                    } catch (Exception ex) {
+		                        ex.printStackTrace();
+		                        inicio.this.actualizarEstadoUI(false);
+		                    }
+		                }
+		            };
+		            worker.execute();
+
+		        } catch (NumberFormatException nfe) {
+		            // Por si el usuario escribe letras en el campo ID
+		            inicio.this.mostrarNotificacion("Error: El ID debe ser un número válido");
+		        }
+		    }
+		});
+		
+	//boton eliminar y sus funciones
+	JButton btnEliminar = new JButton("Eliminar");
+	btnEliminar.setIcon(new ImageIcon(inicio.class.getResource("/img/eliminar2.3.3.png")));
+	EstiloComponentes.aplicarEstiloBoton(btnEliminar);
+	btnEliminar.setBounds(776, 389, 187, 42);
+	btnEliminar.addActionListener(new ActionListener() {
 	
-//condiciones para guardar la informacion de la ventana principal
-
-			    String i = txtID.getText();
-			    String n = txtNombres.getText();
-			    String a = txtApellido.getText();
-			    String d = txtCorreo.getText();
-			    String t = txtNumero.getText();
-			    if (!i.isEmpty()) {
-			    	if(!n.isEmpty()) {
-			    		if(!a.isEmpty()){
-			    			if(!d.isEmpty()) {
-			    				if(!t.isEmpty()) {
-
-			    			    	contacto con = new contacto(Integer.parseInt(i), n, a, d, t);
-			    			    		Agenda.add(con);
-
-			    			    			    			    			    			    				    				    				    				    							JOptionPane.showMessageDialog(null, "Contacto guardado con éxito!");
-			    			    			    			    			    			    				    				    				    				    							txtID.setText("");
-			    			    			    			    			    			    				    				    				    				    							txtNombres.setText("");
-			    			    			    			    			    			    				    				    				    				    							txtApellido.setText("");
-			    			    			    			    			    			    				    				    				    				    							txtCorreo.setText("");
-			    			    			    			    			    			    				    				    				    				    							txtNumero.setText("");
-
-			    			    			    			    			    			    				    				    				    				    							}else {
-			    			    			    			    			    			    				    				    				    				    								JOptionPane.showMessageDialog(null, "El campo Numero esta vacio");
-			    			    			    			    			    			    				    				    				    				    							}
-			    			    			    			    			    			    				    				    				    				    						}else {
-			    			    			    			    			    			    				    				    				    				    							JOptionPane.showMessageDialog(null, "El campo Correo esta vacío");
-			    			    			    			    			    			    				    				    				    				    						}
-			    			    			    			    			    			    				    				    				    				    					}else{
-			    			    			    			    			    			    				    				    				    				    						JOptionPane.showMessageDialog(null, "El campo Apellido esta vacío");
-			    			    			    			    			    			    				    				    				    				    					}
-			    			    			    			    			    			    				    				    				    				    				}else{
-			    			    			    			    			    			    				    				    				    				    					JOptionPane.showMessageDialog(null, "El campo Nombres está vacío");
-			    			    			    			    			    			    				    				    				    				    					}
-			    			    			    			    			    			    				    				    				    				    			}else{
-			    			    			    			    			    			    				    				    				    				    				JOptionPane.showMessageDialog(null, "El campo ID está vacío");
-			    			    			    			    			    			    				    				    				    				    			}
-
-			    			    			    			    			    			    				    				    				    				    		}
-			    			    			    			    			    			    				    				    				    				    	});
-			    			    			    			    			    			    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    	//===============================================================
-			    			    			    			    			    			    				    				    				    				    				    	//botones ventana principal
-			    			    			    			    			    			    				    				    				    				    	//=====================================================================
-			    			    			    			    			    			    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    	BTN_SAVE.setBounds(595, 388, 193, 34);
-			    			    			    			    			    			    				    				    				    				    				    	panelDeLaAgenda.add(BTN_SAVE);
-			    			    			    			    			    			    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    	//boton eliminar y sus funciones
-			    			    			    			    			    			    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    	JButton btnEliminar = new JButton("Eliminar");
-			    			    			    			    			    			    				    				    				    				    				    				    	btnEliminar.setIcon(new ImageIcon(inicio.class.getResource("/img/eliminar2.3.3.png")));
-			    			    			    			    			    			    				    				    				    				    				    				    	btnEliminar.setForeground(new Color(255, 255, 255));
-			    			    			    			    			    			    				    				    				    				    				    				    	btnEliminar.setBackground(new Color(46, 68, 44));
-			    			    			    			    			    			    				    				    				    				    				    				    	btnEliminar.setFont(new Font("Nokian", Font.BOLD, 18));
-			    			    			    			    			    			    				    				    				    				    				    				    	btnEliminar.addActionListener(new ActionListener() {
-			    			    			    			    			    			    				    				    				    				    				    				    	    @Override
+		@Override
+	public void actionPerformed(ActionEvent e) {
+	int fila = Jtable1.getSelectedRow();
+	if (fila >= 0) {          //Lo borramos de la lista lógica
+	 Agenda.remove(fila);
+	 //Lo borramos de la tabla visual
+	 M.removeRow(fila);
+	 JOptionPane.showMessageDialog(null, "Contacto eliminado correctamente");
+	  } else {
+	  JOptionPane.showMessageDialog(null, "Selecciona un contacto de la tabla");
+	  	}
+	   }
+	});
+	
+			  panelDeLaAgenda.add(btnEliminar);
+		 	//boton editar y sus funciones
+		   	JButton btnEditar = new JButton("Editar");
+		 	btnEditar.setIcon(new ImageIcon(inicio.class.getResource("/img/editar2.3.png")));
+		 	EstiloComponentes.aplicarEstiloBoton(btnEditar);
+			btnEditar.addActionListener(new ActionListener() {
+			@Override
 						public void actionPerformed(ActionEvent e) {
-			    			    			    			    			    			    				    				    				    				    				    				    	        int fila = Jtable1.getSelectedRow();
-			    			    			    			    			    			    				    				    				    				    				    				    	        if (fila >= 0) {
-			    			    			    			    			    			    				    				    				    				    				    				    	            //Lo borramos de la lista lógica
-			    			    			    			    			    			    				    				    				    				    				    				    	            Agenda.remove(fila);
-			    			    			    			    			    			    				    				    				    				    				    				    	            //Lo borramos de la tabla visual
-			    			    			    			    			    			    				    				    				    				    				    				    	            M.removeRow(fila);
-			    			    			    			    			    			    				    				    				    				    				    				    	            JOptionPane.showMessageDialog(null, "Contacto eliminado correctamente");
-			    			    			    			    			    			    				    				    				    				    				    				    	        } else {
-			    			    			    			    			    			    				    				    				    				    				    				    	            JOptionPane.showMessageDialog(null, "Selecciona un contacto de la tabla");
-			    			    			    			    			    			    				    				    				    				    				    				    	        }
-			    			    			    			    			    			    				    				    				    				    				    				    	    }
-			    			    			    			    			    			    				    				    				    				    				    				    	});
-			    			    			    			    			    			    				    				    				    				    				    				    	btnEliminar.setBounds(816, 388, 173, 34);
-			    			    			    			    			    			    				    				    				    				    				    				    	panelDeLaAgenda.add(btnEliminar);
-			    			    			    			    			    			    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    	//boton editar y sus funciones
-			    			    			    			    			    			    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    	JButton btnEditar = new JButton("Editar");
-			    			    			    			    			    			    				    				    				    				    				    				    				    	btnEditar.setIcon(new ImageIcon(inicio.class.getResource("/img/editar2.3.png")));
-			    			    			    			    			    			    				    				    				    				    				    				    				    	btnEditar.setForeground(new Color(255, 255, 255));
-			    			    			    			    			    			    				    				    				    				    				    				    				    	btnEditar.setBackground(new Color(46, 68, 44));
-			    			    			    			    			    			    				    				    				    				    				    				    				    	btnEditar.setFont(new Font("Nokian", Font.BOLD, 18));
-			    			    			    			    			    			    				    				    				    				    				    				    				    	btnEditar.addActionListener(new ActionListener() {
-			    			    			    			    			    			    				    				    				    				    				    				    				    	    @Override
-						public void actionPerformed(ActionEvent e) {
-			    			    			    			    			    			    				    				    				    				    				    				    				    	        int fila = Jtable1.getSelectedRow();
-			    			    			    			    			    			    				    				    				    				    				    				    				    	        if (fila >= 0) {
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            // Obtenemos los nuevos datos de los cuadros de texto
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            int id = Integer.parseInt(txtID.getText());
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            String nom = txtNombres.getText();
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            String ape = txtApellido.getText();
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            String corr = txtCorreo.getText();
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            String tel = txtNumero.getText();
+			   	        int fila = Jtable1.getSelectedRow();
+			   	        if (fila >= 0) {
+			            // Obtenemos los nuevos datos de los cuadros de texto
+			            int id = Integer.parseInt(txtID.getText());
+			    	            String nom = txtNombres.getText();
+			    	            String ape = txtApellido.getText();
+			    	            String corr = txtCorreo.getText();
+			    	            String tel = txtNumero.getText();
 
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            // Actualizamos el objeto en el ArrayList
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            contacto conEditado = new contacto(id, nom, ape, corr, tel);
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            Agenda.set(fila, conEditado);
+			    		// Actualizamos el objeto en el ArrayList
+			    		contacto conEditado = new contacto(id, nom, ape, corr, tel);
+			    		Agenda.set(fila, conEditado);
+	    	            // Actualizamos la tabla visualmente
+	    	            M.setValueAt(id, fila, 0);
+	    	            M.setValueAt(nom, fila, 1);
+	    	            M.setValueAt(ape, fila, 2);
+	    	            M.setValueAt(corr, fila, 3);
+			    		M.setValueAt(tel, fila, 4);
 
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            // Actualizamos la tabla visualmente
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            M.setValueAt(id, fila, 0);
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            M.setValueAt(nom, fila, 1);
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            M.setValueAt(ape, fila, 2);
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            M.setValueAt(corr, fila, 3);
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            M.setValueAt(tel, fila, 4);
-
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            JOptionPane.showMessageDialog(null, "Contacto actualizado");
-			    			    			    			    			    			    				    				    				    				    				    				    				    	        } else {
-			    			    			    			    			    			    				    				    				    				    				    				    				    	            JOptionPane.showMessageDialog(null, "Selecciona qué contacto quieres editar");
-			    			    			    			    			    			    				    				    				    				    				    				    				    	        }
-			    			    			    			    			    			    				    				    				    				    				    				    				    	    }
-			    			    			    			    			    			    				    				    				    				    				    				    				    	});
-			    			    			    			    			    			    				    				    				    				    				    				    				    	btnEditar.setBounds(1020, 388, 156, 34);
-			    			    			    			    			    			    				    				    				    				    				    				    				    	panelDeLaAgenda.add(btnEditar);
-			    			    			    			    			    			    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	JScrollPane scrollPane = new JScrollPane();
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	scrollPane.setEnabled(false);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	scrollPane.setBorder(null);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	scrollPane.setViewportBorder(null);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	scrollPane.setBounds(390, 64, 807, 314);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	scrollPane.setBackground(new Color(160, 200, 120));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	scrollPane.getViewport().setBackground(new Color(160, 200, 120));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    	panelDeLaAgenda.add(scrollPane);
+			    		JOptionPane.showMessageDialog(null, "Contacto actualizado");
+			    		  } else {
+			    		JOptionPane.showMessageDialog(null, "Selecciona qué contacto quieres editar");
+			    			        }
+			    			    }
+			    	    	});
+			    	  	btnEditar.setBounds(992, 389, 187, 42);
+			    	   	panelDeLaAgenda.add(btnEditar);
+			    			    				    			    			    			    			    			    				    				    				    				    				    				    				    	
+			    		JScrollPane scrollPane = new JScrollPane();
+			    		scrollPane.setEnabled(false);
+			    		scrollPane.setBorder(null);
+			    		scrollPane.setViewportBorder(null);
+			    		scrollPane.setBounds(390, 64, 807, 314);
+			    		scrollPane.setBackground(new Color(160, 200, 120));
+			    		scrollPane.getViewport().setBackground(new Color(160, 200, 120));
+			    		panelDeLaAgenda.add(scrollPane);
 			    			    			    			    			    			    				    				    				    				    				    				    				    				    	
 			    		Jtable1 = new JTable();
-			    		Jtable1.setColumnSelectionAllowed(true);
-			    		Jtable1.setCellSelectionEnabled(true);
-			    		Jtable1.setShowGrid(true);
-			    		Jtable1.setGridColor(new Color(46, 68, 44));
-			    		Jtable1.setFillsViewportHeight(true);
-			    		Jtable1.setRowHeight(20);
-			    		Jtable1.setIntercellSpacing(new Dimension(2, 2));
-			    		Jtable1.setFont(new Font("Nokian", Font.BOLD, 14));
-			    		Jtable1.setForeground(Color.WHITE);
-			    		Jtable1.setBackground(new Color(160, 200, 120));
-			    		Jtable1.getTableHeader().setBackground(new Color(46, 68, 44)); // Verde oscuro
-			    		Jtable1.getTableHeader().setForeground(Color.WHITE);
-			    		Jtable1.getTableHeader().setFont(new Font("Nokian", Font.BOLD, 14));
-			    		Jtable1.getTableHeader().setBorder(new javax.swing.border.StrokeBorder(stroke, new Color(46, 68, 44)));
-			    		//((DefaultTableCellRenderer)Jtable1.getDefaultRenderer(Object.class)).setOpaque(true);
-			    		Jtable1.setBorder(new javax.swing.border.StrokeBorder(stroke, new Color(46, 68, 44)));
+			    		EstiloComponentes.EstiloTabla(Jtable1);
 			    		scrollPane.setViewportView(Jtable1);
-			    		
+			    		CrearModelo();
 			    			    			    			    			    			    				    				    				    				    				    				    				    				    	Jtable1.addMouseListener(new java.awt.event.MouseAdapter() {
 			    	    @Override
 						public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -368,108 +364,77 @@ public class inicio extends JFrame {
 			    	         }
 			    	    }
 			    	});
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    	//boton mostrar y sus funciones
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    	JButton btnMostrar = new JButton("Mostrar");
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    	btnMostrar.setForeground(new Color(255, 255, 255));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    	btnMostrar.setBackground(new Color(46, 68, 44));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    	btnMostrar.setFont(new Font("Nokian", Font.BOLD, 18));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    	btnMostrar.addActionListener(new ActionListener() {
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		@Override
-						public void actionPerformed(ActionEvent e) {
+			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    		    			    				    				    				    				    				    				    				    				    				    				    				    	
+	JLabel LBL_Numero = new JLabel("Telefono");
+	EstiloComponentes.aplicarEstiloLabel(LBL_Numero);
+	LBL_Numero.setBounds(10, 250, 119, 14);
+	panelDeLaAgenda.add(LBL_Numero);
+			    			   
+	txtNumero = new JTextField();
+	txtNumero.setBounds(133, 241, 241, 34);
+	EstiloComponentes.EstiloCampo(txtNumero, PaletaNokia.VERDE_OSCURO);
+	panelDeLaAgenda.add(txtNumero);
+	txtNumero.setColumns(10);
+	 	//GATO DE LA PESTA;A PRINCIPAL
+	JLabel LBL_Numero_1 = new JLabel("");
+	LBL_Numero_1.setIcon(new ImageIcon(inicio.class.getResource("/img/GYFANI.png")));
+	LBL_Numero_1.setBounds(47, 265, 262, 183);
+	panelDeLaAgenda.add(LBL_Numero_1);
+	//BOTON DE BUSQUEDA RAPIDA
+	JButton btnLupa = new JButton("");
+	EstiloComponentes.aplicarEstiloBoton(btnLupa);
+	btnLupa.setIcon(new ImageIcon(inicio.class.getResource("/img/mostrar2.3.png")));
+	btnLupa.setBounds(390, 389, 107, 42);
+	btnLupa.setToolTipText("Buscar contactos (Ctrl+F)"); // Muestra ayuda al pasar el ratón
+	panelDeLaAgenda.add(btnLupa);
+	Action accionBuscar = new AbstractAction() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+	       inicio.this.mostrarPopupBusqueda();
+	    }
+	};
 
-
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		        // IMPORTANTE: Limpia la tabla antes de mostrar para no duplicar datos
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		        M.setRowCount(0);
-
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		        for (contacto element : Agenda) {
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		            contacto c = element;
-
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		            // Creamos un arreglo con los datos exactos del contacto
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		            // Asegúrate de que los nombres de los métodos (getId, etc) coincidan con tu clase contacto
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		            Object fila[] = {
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		                c.getId(),
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		                c.getNombres(),
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		                c.getApellidos(),
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		                c.getCorreo(),
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		                c.getNumero()
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		            };
-
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		            // Agregamos la fila completa de un solo golpe
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		            M.addRow(fila);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		        }
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		    }
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    		});
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    	btnMostrar.setBounds(429, 388, 129, 34);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    	panelDeLaAgenda.add(btnMostrar);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    	//etiqueta numero con su caja de texto de la ventana principal
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    	JLabel LBL_Numero = new JLabel("Telefono");
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    	LBL_Numero.setForeground(new Color(46, 68, 44));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    	LBL_Numero.setFont(new Font("Nokian", Font.BOLD, 14));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    	LBL_Numero.setBounds(10, 250, 119, 14);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    	panelDeLaAgenda.add(LBL_Numero);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	txtNumero = new JTextField();
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	txtNumero.setForeground(new Color(46, 68, 44));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	txtNumero.setFont(new Font("Nokian", Font.BOLD, 11));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	txtNumero.setBackground(new Color(160, 200, 120));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	txtNumero.setBounds(133, 241, 241, 34);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	personalizarCampo(txtNumero, new Color(46, 68, 44));
-			    			    			    		    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	panelDeLaAgenda.add(txtNumero);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	txtNumero.setColumns(10);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	JLabel LBL_Numero_1 = new JLabel("");
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	LBL_Numero_1.setIcon(new ImageIcon(inicio.class.getResource("/img/GYFANI.png")));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	LBL_Numero_1.setForeground(new Color(46, 68, 44));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	LBL_Numero_1.setFont(new Font("Nokian", Font.BOLD, 14));
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	LBL_Numero_1.setBounds(47, 265, 262, 183);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	panelDeLaAgenda.add(LBL_Numero_1);
-			    			    			    			    			    			    				    				    				    				    				    				    				    				    				    				    				    				    				    	panelDeLaAgenda.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{LBLtAgT, LBL_ID, LBL_NOM, LBL_AP, LBL_EMAIL, txtID, txtNombres, txtApellido, txtCorreo, BTN_SAVE, scrollPane, Jtable1, btnMostrar, LBL_Numero, txtNumero, LBL_Numero_1}));
-
-//===============================================================================
+	// 3. Ahora lo vinculas
+	btnLupa.addActionListener(accionBuscar);
+	
+	JPanel root = (JPanel) this.getContentPane();
+	root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+	    .put(KeyStroke.getKeyStroke("control F"), "abrirBuscador");
+	root.getActionMap().put("abrirBuscador", accionBuscar);
+	
+	panelDeLaAgenda.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{LBLtAgT, LBL_ID, LBL_NOM, LBL_AP, LBL_EMAIL, txtID, txtNombres, txtApellido, txtCorreo, BTN_SAVE, scrollPane, Jtable1, LBL_Numero, txtNumero, LBL_Numero_1, btnLupa}));
+	
+//========================================================
 	//CONFIGURACIONES DE LA SEGUNDA PESTAÑA DEL PROGRAMA DE AGENDA TELEFONICA
 //===============================================================================
-
 		//nombre de la pestaña de consultas
 		JPanel panelConsultas = new JPanel();
 		panelConsultas.setBackground(new Color(160, 200, 120));
 	    panelConsultas.setLayout(null);
 	    pestania.addTab("Consultas y Estadísticas", panelConsultas);
-
 	    //boton de busqueda de contactos de la agenda
-
 	    JLabel lblBuscar = new JLabel("Buscar por apellido");
 	    lblBuscar.setHorizontalAlignment(SwingConstants.RIGHT);
-	    lblBuscar.setForeground(new Color(46, 68, 44));
-	    lblBuscar.setFont(new Font("Nokian", Font.BOLD, 14));
+	    EstiloComponentes.aplicarEstiloLabel(lblBuscar);
 	    lblBuscar.setBounds(10, 14, 155, 20);
 	    panelConsultas.add(lblBuscar);
 
-	    JTextField txtFiltro = new JTextField();
-	    txtFiltro.setForeground(new Color(46, 68, 44));
-	    txtFiltro.setBackground(new Color(160, 200, 120));
-	    txtFiltro.setFont(new Font("Nokian", Font.BOLD, 11));
+	    JTextField txtFiltro =new JTextField();
+	    EstiloComponentes.EstiloCampo(txtFiltro, PaletaNokia.VERDE_OSCURO);
 	    txtFiltro.setBounds(217, 11, 173, 29);
-	    personalizarCampo(txtFiltro, new Color(46, 68, 44));
 	    panelConsultas.add(txtFiltro);
 
 	    //Botón para Ordenar Alfabeticamente
 	    JButton btnOrdenar = new JButton("A-Z");
-	    btnOrdenar.setForeground(new Color(255, 255, 255));
-	    btnOrdenar.setBackground(new Color(46, 68, 44));
-	    btnOrdenar.setFont(new Font("Nokian", Font.BOLD, 11));
-	    btnOrdenar.setBounds(400, 14, 64, 23);
+	    EstiloComponentes.aplicarEstiloBoton(btnOrdenar);
+	    btnOrdenar.setBounds(400, 6, 76, 39);
 	    panelConsultas.add(btnOrdenar);
-
+ 
 	    //Barra de progreso
 	    barraProgreso = new JProgressBar();
 	    barraProgreso.setForeground(new Color(46, 68, 44));
 	    barraProgreso.setFont(new Font("Nokian", Font.BOLD, 11));
-	    barraProgreso.setBounds(97, 423, 512, 14);
+	    barraProgreso.setBounds(97, 417, 512, 20);
 	    barraProgreso.setStringPainted(true); // Muestra el porcentaje %
 	    barraProgreso.setVisible(false); // Empieza oculta
 	    panelConsultas.add(barraProgreso);
@@ -485,25 +450,9 @@ public class inicio extends JFrame {
 
 	    // Encabezado de la segunda tabla (TABLA DE CONSULTAS)
 	    tablaConsultas = new JTable();
-	    tablaConsultas.setShowVerticalLines(false);
-	    tablaConsultas.setShowHorizontalLines(false);
-	    tablaConsultas.setShowGrid(false);
-	    tablaConsultas.setBorder(null);
-	    tablaConsultas.setEnabled(false);
-		tablaConsultas.setIntercellSpacing(new Dimension(2, 2));
-	    tablaConsultas.setRowHeight(20);
-	    tablaConsultas.setFillsViewportHeight(true);
-	    tablaConsultas.setBackground(new Color(160, 200, 120));
-	    tablaConsultas.setForeground(new Color(46, 68, 44));
-	    tablaConsultas.setFont(new Font("Nokian", Font.BOLD, 14));
-	    tablaConsultas.getTableHeader().setBackground(new Color(46, 68, 44)); // Verde oscuro
-	    tablaConsultas.getTableHeader().setForeground(Color.WHITE);
-	    tablaConsultas.getTableHeader().setFont(new Font("Nokian", Font.BOLD, 14));
-		tablaConsultas.getTableHeader().setBorder(new javax.swing.border.StrokeBorder(stroke, new Color(46, 68, 44)));
-		tablaConsultas.setBorder(new javax.swing.border.StrokeBorder(stroke, new Color(46, 68, 44)));
 	    modeloConsultas = new DefaultTableModel(null, new String[]{"I D", "Nombres", "Apellidos", "Correo", "Numero"});
 	    tablaConsultas.setModel(modeloConsultas);
-
+	    EstiloComponentes.EstiloTabla(tablaConsultas);
 	    //MEDIDAS DE LAS CELDAS DE LA SEGUNDA TABLA
 
 	    tablaConsultas.getColumnModel().getColumn(0).setPreferredWidth(35);//ID
@@ -515,8 +464,7 @@ public class inicio extends JFrame {
 
 	    //CONTADOR DE CONTACTOS
 	    JLabel txtTotal = new JLabel("Total contactos: 0");
-	    txtTotal.setForeground(new Color(46, 68, 44));
-	    txtTotal.setFont(new Font("Nokian", Font.BOLD, 14));
+	    EstiloComponentes.aplicarEstiloLabel(txtTotal);
 	    txtTotal.setBounds(180, 346, 214, 20);
 	    panelConsultas.add(txtTotal);
 
@@ -528,8 +476,8 @@ public class inicio extends JFrame {
 
 	            for (Object obj : Agenda) {
 	                contacto c = (contacto) obj;
-	                if (c.getApellidos().toLowerCase().contains(busqueda)) {
-	                    modeloConsultas.addRow(new Object[]{c.getId(), c.getNombres(), c.getApellidos(), c.getCorreo(), c.getNumero()});
+	                if (c.getapellidos().toLowerCase().contains(busqueda)) {
+	                    modeloConsultas.addRow(new Object[]{c.getid(), c.getnombres(), c.getapellidos(), c.getcorreo(), c.getnumero()});
 	                }
 	            }
 	            // Actualizar estadística rápida
@@ -538,49 +486,43 @@ public class inicio extends JFrame {
 	    });
 	    btnOrdenar.addActionListener(e -> {
 	        // Ordenamos el ArrayList Agenda comparando los apellidos
-	        Agenda.sort((o1, o2) -> o1.getApellidos().compareToIgnoreCase(o2.getApellidos()));
+	        Agenda.sort((o1, o2) -> o1.getapellidos().compareToIgnoreCase(o2.getapellidos()));
 
 	        // Refrescar la tabla de la pestaña 2
 	        txtFiltro.setText(""); // Limpiamos filtro para mostrar todos
 	        modeloConsultas.setRowCount(0);
 	        for (Object obj : Agenda) {
 	            contacto c = (contacto) obj;
-	            modeloConsultas.addRow(new Object[]{c.getId(), c.getNombres(), c.getApellidos(), c.getCorreo(), c.getNumero()});
+	            modeloConsultas.addRow(new Object[]{c.getid(), c.getnombres(), c.getapellidos(), c.getcorreo(), c.getnumero()});
 	        }
 	        JOptionPane.showMessageDialog(null, "Lista ordenada por apellidos");
 	    });
 	 // Título de la sección
 	    JLabel lblTituloEst = new JLabel("Estadística  por  Dominio  de  Correo");
-	    lblTituloEst.setForeground(new Color(46, 68, 44));
-	    lblTituloEst.setFont(new Font("Nokian", Font.BOLD, 14));
+	    EstiloComponentes.aplicarEstiloLabel(lblTituloEst);
 	    lblTituloEst.setBounds(10, 51, 380, 20);
 	    panelConsultas.add(lblTituloEst);
 
 	    // Etiquetas para los resultados
 	    lblGmail = new JLabel("Gmail: 0");
 	    lblGmail.setIcon(null);
-	    lblGmail.setForeground(new Color(46, 68, 44));
-	    lblGmail.setFont(new Font("Nokian", Font.BOLD, 14));
+	    EstiloComponentes.aplicarEstiloLabel(lblGmail);
 	    lblGmail.setBounds(57, 186, 84, 20);
 	    panelConsultas.add(lblGmail);
 
 	    lblOutlook = new JLabel("Outlook/Hotmail: 0");
-	    lblOutlook.setForeground(new Color(46, 68, 44));
-	    lblOutlook.setFont(new Font("Nokian", Font.BOLD, 14));
+	    EstiloComponentes.aplicarEstiloLabel(lblOutlook);
 	    lblOutlook.setBounds(196, 186, 155, 20);
 	    panelConsultas.add(lblOutlook);
 
 	    lblOtros = new JLabel("Otros: 0");
-	    lblOtros.setForeground(new Color(46, 68, 44));
-	    lblOtros.setFont(new Font("Nokian", Font.BOLD, 14));
+	    EstiloComponentes.aplicarEstiloLabel(lblOtros);
 	    lblOtros.setBounds(57, 346, 64, 20);
 	    panelConsultas.add(lblOtros);
 
 	    // Botón para procesar la estadística
 	    JButton btnAnalizar = new JButton("Analizar Correos");
-	    btnAnalizar.setForeground(new Color(255, 255, 255));
-	    btnAnalizar.setBackground(new Color(46, 68, 44));
-	    btnAnalizar.setFont(new Font("Nokian", Font.BOLD, 18));
+	    EstiloComponentes.aplicarEstiloBoton(btnAnalizar);
 	    btnAnalizar.setBounds(654, 389, 291, 42);
 	    panelConsultas.add(btnAnalizar);
 
@@ -615,7 +557,7 @@ public class inicio extends JFrame {
 	                        int gmail = 0, outlook = 0, otros = 0;
 	                        for (Object obj : Agenda) {
 	                            contacto c = (contacto) obj;
-	                            String correo = c.getCorreo().toLowerCase();
+	                            String correo = c.getcorreo().toLowerCase();
 	                            if (correo.contains("@gmail")) {
 									gmail++;
 								} else if (correo.contains("@outlook") || correo.contains("@hotmail")) {
@@ -647,20 +589,17 @@ public class inicio extends JFrame {
 	 //Declaramos el botón indicando el tipo de objeto (JButton)
 	    
 	    JButton btnExportarCSV = new JButton("Exportar Lista");
-	    btnExportarCSV.setForeground(new Color(255, 255, 255));
-	    btnExportarCSV.setBackground(new Color(46, 68, 44));
+	    EstiloComponentes.aplicarEstiloBoton(btnExportarCSV);
 	    btnExportarCSV.setBounds(992, 389, 187, 42);
-	    btnExportarCSV.setFont(new Font("Nokian", Font.BOLD, 18));
 	    panelConsultas.add(btnExportarCSV);
-	    
+	    //ICONOS DE LOS BOTONES
 	    JLabel Lupita = new JLabel("");
 	    Lupita.setIcon(new ImageIcon(inicio.class.getResource("/img/LUPITA.png")));
 	    Lupita.setBounds(175, -2, 32, 42);
 	    panelConsultas.add(Lupita);
 	    
 	    JLabel LBLCyE = new JLabel("ESTADISTICAS Y CONSULTAS");
-	    LBLCyE.setForeground(new Color(46, 68, 44));
-	    LBLCyE.setFont(new Font("BM neco", Font.PLAIN, 42));
+	    EstiloComponentes.aplicarEstiloTitulos(LBLCyE);
 	    LBLCyE.setBounds(486, 4, 734, 49);
 	    panelConsultas.add(LBLCyE);
 	    
@@ -712,7 +651,6 @@ public class inicio extends JFrame {
 	    		LBL_AP.setText("Last Name");
 	    		LBL_Numero.setText("Phone Number");
 	    		LBLtAgT.setText("Contact Manager");
-	    		btnMostrar.setText("Show");
 	    		BTN_SAVE.setText("Save");
 	    		btnEliminar.setText("Delete");
 	    		btnEditar.setText("Edit");
@@ -736,7 +674,6 @@ public class inicio extends JFrame {
     		LBL_AP.setText("Nom");
     		LBL_Numero.setText("Telephone");
     		LBLtAgT.setText("Gestionnaire de Contacts");
-    		btnMostrar.setText("Afficher");
     		BTN_SAVE.setText("Engregistrer");
     		btnEliminar.setText("Supprimer");
     		btnEditar.setText("Modifier");
@@ -759,7 +696,6 @@ public class inicio extends JFrame {
 	    		LBL_AP.setText("Apellido");
 	    		LBL_Numero.setText("Telefono");
 	    		LBLtAgT.setText("Agenda  Telefonica");
-	    		btnMostrar.setText("Mostrar");
 	    		BTN_SAVE.setText("Guardar");
 	    		btnEliminar.setText("Eliminar");
 	    		btnEditar.setText("Editar");
@@ -776,17 +712,12 @@ public class inicio extends JFrame {
 	    	}
 	    	}
 	    	
-	    	
-	    	
 	    	}
 	    	
 	    );
 	    CmbIdioma.setModel(new DefaultComboBoxModel(new String[] {"Spanish", "English", "French"}));
 	    CmbIdioma.setBounds(236, 101, 393, 148);
 	    panel.add(CmbIdioma);
-	    
-	   
-	    
 	    
 //=================================================================================================
 	    btnExportarCSV.addActionListener(new ActionListener() {
@@ -814,7 +745,7 @@ public class inicio extends JFrame {
 	                }
 
 	                try (PrintWriter pw = new PrintWriter(new FileWriter(ruta))) {
-	                    // Escribimos los encabezados (5 columnas según tu tabla)
+	                    // Escribimos los encabezados
 	                    pw.println("ID;Nombres;Apellidos;Correo;Numero");
 
 	                    // Recorremos las filas del MODELO
@@ -833,44 +764,200 @@ public class inicio extends JFrame {
 	                    JOptionPane.showMessageDialog(null, "Error al escribir el archivo: " + ex.getMessage());
 	                }
 	            }
+	        }	
+	        
+	    		});
+	    
+	}
+	
+	public void filtrarPorApellido(String busqueda) {
+	    // 1. Limpiamos la tabla de la pestaña 2 para meter solo lo que encontremos
+	    modeloConsultas.setRowCount(0); 
+
+	    // 2. Buscamos en tu ArrayList 'Agenda'
+	    for (Object obj : Agenda) {
+	        contacto c = (contacto) obj; // Convertimos el objeto a tipo contacto
+	        
+	        // Comparamos el apellido (todo en minúsculas para que no falle)
+	        if (c.getapellidos().toLowerCase().contains(busqueda.toLowerCase())) {
+	            // Si coincide, lo agregamos a la tabla de consultas
+	            modeloConsultas.addRow(new Object[]{
+	                c.getid(), c.getnombres(), c.getapellidos(), c.getcorreo(), c.getnumero()
+	            });
+	        }
+	    }
+	    
+	}
+	
+	private void mostrarPopupBusqueda() {
+	   //JDialog que servirá como barra de búsqueda flotante
+	    JDialog popup = new JDialog(this, "Buscar Rápido", false); 
+	    popup.setUndecorated(false); // Estilo retro sin bordes
+	    popup.setSize(400, 300);
+	    popup.setLocationRelativeTo(this); // Centrado sobre la ventana principal
+	    
+	    JPanel panelPrincipal = new JPanel(new BorderLayout());
+	    panelPrincipal.setBackground(new Color(160, 200, 120));
+	    
+	    JPanel panelBusqueda = new JPanel(new BorderLayout());
+	    panelBusqueda.setBorder(BorderFactory.createLineBorder(new Color(46, 68, 44), 2));
+	    panelBusqueda.setBackground(new Color(160, 200, 120));
+
+	    // Campo de texto con tu fuente Nokian
+	    JTextField txtPopUp = new JTextField(" Escriba para buscar...");
+	    txtPopUp.setFont(new Font("Nokian", Font.BOLD, 14));
+	    txtPopUp.setBackground(new Color(160, 200, 120));
+	    txtPopUp.setForeground(new Color(46, 68, 44));
+	    txtPopUp.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(46, 68, 44))); // Línea inferior
+
+	    String[] columnas = {"Nombre", "Numero", "Email"}; // Ajusta a tus datos
+	    DefaultTableModel modeloPopup = new DefaultTableModel(columnas, 0) { 
+	    	@Override
+	        public boolean isCellEditable(int row, int column) { return false; } 
+	    };
+	    
+	    JTable tablaPopup = new JTable(modeloPopup);
+	    EstiloComponentes.EstiloTabla(tablaPopup);
+	    
+	    JScrollPane scroll = new JScrollPane(tablaPopup);
+	    scroll.getViewport().setBackground(new Color(160, 200, 120));
+	    scroll.setBorder(BorderFactory.createLineBorder(new Color(46, 68, 44), 1));
+	    scroll.getViewport().setBackground(new Color(160, 200, 120));
+	    scroll.setBorder(null);
+	    // Borrar el texto por defecto al ganar foco
+	    txtPopUp.addFocusListener(new FocusAdapter() {
+	        @Override
+	        public void focusGained(FocusEvent e) { 
+	        	if(txtPopUp.getText().equals(" Escriba para buscar...")) {
+	            txtPopUp.setText(""); 
+	        }
 	        }
 	    });
 
-		CrearModelo();
+	    // Acción al presionar ENTER
+	    txtPopUp.addActionListener(e -> {
+	        String criterio = txtPopUp.getText().trim();
+	        if (!criterio.isEmpty()) {
+	        	buscarContactosHebra(criterio, modeloPopup);
+	   
+	        }
+
+	    });
+	    
+	 // Crear el título con la fuente Nokian y el color verde oscuro
+	    JLabel lblTitulo = new JLabel("BUSQUEDA  RAPIDA:");
+	    EstiloComponentes.aplicarEstiloLabel(lblTitulo);
+	    lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+	    
+	    JPanel panelNorte = new JPanel(new GridLayout(2, 1)); // 2 filas, 1 columna
+	    panelNorte.setBackground(new Color(160, 200, 120));
+	    panelNorte.add(lblTitulo);
+	    panelNorte.add(txtPopUp);
+	   // lblTitulo.setBorder(BorderFactory.createEmptyPadding(10, 0, 10, 0)); // Espaciado
+	    
+	    panelPrincipal.add(panelNorte, BorderLayout.NORTH);
+	    panelPrincipal.add(scroll, BorderLayout.CENTER);
+	    
+	    panelBusqueda.removeAll(); 
+	    panelBusqueda.add(panelPrincipal, BorderLayout.CENTER);
+	    
+	    // 3. Añadimos el marco final al popup
+	    popup.getContentPane().removeAll();
+	    popup.getContentPane().add(panelBusqueda);
+	    
+	    // 4. Refrescamos y mostramos
+	    popup.revalidate();
+	    popup.repaint();
+	    popup.setVisible(true);
+	    txtPopUp.requestFocusInWindow(); 
+	}
+	    public void buscarContactosHebra(String texto, DefaultTableModel modelo) {
+	        SwingWorker<List<Object[]>, Void> worker = new SwingWorker<>() {
+	            @Override
+	            protected List<Object[]> doInBackground() {
+	                List<Object[]> filtrados = new ArrayList<>();
+	                String busqueda = texto.toLowerCase();
+	                
+	                synchronized (Agenda) {
+	                
+	                for (Object obj : Agenda) {
+	                    contacto c = (contacto) obj;
+	                    // Buscamos coincidencia en nombres o apellidos
+	                    if (c.getnombres().toLowerCase().contains(busqueda) || 
+	                        c.getapellidos().toLowerCase().contains(busqueda)) {
+	                        
+	                        filtrados.add(new Object[]{
+	                            c.getnombres() + " " + c.getapellidos(), 
+	                            c.getnumero(), 
+	                            c.getcorreo()
+	                        });
+	                    }
+	                }
+	                }
+	                return filtrados; 
+	            
+	            }
+	            @Override
+	            protected void done() {
+	                try {
+	                    List<Object[]> resultados = get();
+	                    modelo.setRowCount(0); // Limpia la tabla antes de mostrar nuevos resultados
+	                    for (Object[] fila : resultados) {
+	                        modelo.addRow(fila);
+	                    }
+	                } catch (Exception e) {
+	                    e.printStackTrace();
+	                    
+	                    System.err.println("Error al actualizar la tabla: " + e.getMessage());
+	                
+	                }
+	            }
+	        };
+	        worker.execute();
+	    }
+			
+	public void actualizarEstadoUI(boolean cargando) {
+	    // Esto evita que el usuario presione el botón varias veces mientras se procesa
+	    if (BTN_SAVE != null) {
+	        BTN_SAVE.setEnabled(!cargando);
+	    }
+	    
+	    if (cargando) {
+	        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	    } else {
+	        setCursor(Cursor.getDefaultCursor());
+	    }
 	}
 
-//============================================================
-		//LINEA PUNTUADA PARA CAMPOS DE TEXTO Y OTROS.
-//============================================================
-		private void personalizarCampo(JTextField campo, Color color) {
+	public void mostrarNotificacion(String mensaje) {
+	    JOptionPane.showMessageDialog(this, mensaje);
+	}
 
-			float[] dash = {6f, 4f};
-			BasicStroke stroke = new BasicStroke(
-					3,
-					BasicStroke.CAP_SQUARE,
-					BasicStroke.JOIN_MITER,
-					10.0f,
-					dash,
-					0.0f
-			);
+	public void limpiarCampos() {
+	    txtID.setText("");
+	    txtNombres.setText("");
+	    txtApellido.setText("");
+	    txtCorreo.setText("");
+	    txtNumero.setText("");
+	}
 
-			// 2. Crear el borde punteado
-			StrokeBorder bordePunteado = new StrokeBorder(stroke, color);
+	public void refrescarTabla() {
+	    if (M != null) {
+	        M.setRowCount(0); // Limpia las filas actuales de la JTable
+	        for (clase.contacto c : Agenda) {
+	            // Se cargan los datos usando los métodos de la clase contacto
+	            Object[] fila = {
+	                c.getid(), 
+	                c.getnombres(), 
+	                c.getapellidos(), 
+	                c.getcorreo(), 
+	                c.getnumero()
+	            };
+	            M.addRow(fila);
+	        }
+	    }
+	}
 
-			// 3. Crear un margen interno (Padding) para que el texto no toque el borde
-			// (Arriba, Izquierda, Abajo, Derecha)
-			EmptyBorder margenInterno = new EmptyBorder(0, 8, 0, 8);
-
-			// 4. Combinar ambos bordes y aplicar
-			campo.setBorder(new CompoundBorder(bordePunteado, margenInterno));
-
-			// Tip extra: Cambiar la fuente para que combine con el estilo
-			campo.setFont(new Font("Nokian", Font.BOLD, 14));
-
-
-
-
-		}
 }
 
 	

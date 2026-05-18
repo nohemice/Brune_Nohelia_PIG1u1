@@ -1,61 +1,59 @@
 package clase;
 
-//variables que se utilizaran para la informacion de la agenda
+// Variables que se utilizaran para la informacion de la agenda
 public class contacto {
-	int Id;
-	String Nombres;
-	String Apellidos;
-	String Correo;
-	String Numero;
-	public contacto(int Id, String Nombres, String Apellidos, String Correo, String Numero) {
-		this.Id = Id;
-		this.Nombres = Nombres;
-		this.Apellidos = Apellidos;
-		this.Correo = Correo;
-		this.Numero = Numero;
+    int id;
+    String nombres, apellidos, correo, numero;
+    
+    public contacto(int id, String nombres, String apellidos, String correo, String numero) {
+        this.id = id;
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.correo = correo;
+        this.numero = numero;
+    }
 
-	}
-//metodos de ecritura y lectura para la informacion que se va ingresar
-	public int getId() {
-		return Id;
-	}
+    // Métodos de lectura (Getters)
+    public int getid() {
+        return id;
+    }
 
-	public void setId(int id) {
-		Id = id;
-	}
+    public String getnombres() {
+        return nombres;
+    }
 
-	public String getNombres() {
-		return Nombres;
-	}
+    public String getapellidos() {
+        return apellidos;
+    }
 
-	public void setNombres(String nombres) {
-		Nombres = nombres;
-	}
+    
+    public String getcorreo() {
+        return correo;
+    }
 
-	public String getApellidos() {
-		return Apellidos;
-	}
+    public String getnumero() {
+        return numero;
+    }
 
-	public void setApellidos(String apellidos) {
-		Apellidos = apellidos;
-	}
+    // Métodos de asignación (Setters)
+    public void setid(int id) {
+        this.id = id; 
+    }
 
-	public String getCorreo() {
-		return Correo;
-	}
+    public void setnombres(String nombres) {
+        this.nombres = nombres;
+    }
 
-	public void setCorreo(String correo) {
-		Correo = correo;
-	}
+   
+    public void setapellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
 
-	public String getNumero() {
-		return Numero;
-	}
+    public void setcorreo(String correo) {
+        this.correo = correo;
+    }
 
-	public void setNumero(String numero) {
-		Numero = numero;
-	}
-
-
-
+    public void setnumero(String numero) {
+        this.numero = numero;
+    }
 }
